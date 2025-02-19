@@ -2,7 +2,6 @@
 
 class WineModel {
     constructor() {
-        // Las características del vino que vamos a analizar
         this.features = [
             "fixed acidity",
             "volatile acidity",
@@ -17,15 +16,12 @@ class WineModel {
             "alcohol"
         ];
 
-        // Inicializamos los pesos y el bias
         this.initializeWeights();
     }
 
     initializeWeights() {
-        // Creamos un objeto para almacenar los pesos
         this.weights = {};
         this.features.forEach(feature => {
-            // Inicializamos con valores pequeños aleatorios
             this.weights[feature] = Math.random() * 0.1;
         });
         this.bias = Math.random() * 0.1;

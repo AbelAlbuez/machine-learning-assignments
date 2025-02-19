@@ -22,7 +22,7 @@ function generateChart(history, title, filename) {
                 },
                 {
                     label: 'Precisión',
-                    data: history.accuracy.map(acc => acc * 100), // Convert to percentage
+                    data: history.accuracy.map(acc => acc * 100),
                     borderColor: 'blue',
                     fill: false
                 }
@@ -44,7 +44,6 @@ function generateChart(history, title, filename) {
     const chartUrl = chart.getUrl();
     console.log(`\n📊 Gráfico generado para ${title}: ${chartUrl}`);
 
-    // Save chart URL to file
     fs.writeFileSync(filename, chartUrl);
 }
 

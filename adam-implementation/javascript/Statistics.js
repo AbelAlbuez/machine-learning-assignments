@@ -2,7 +2,6 @@
 
 class Statistics {
     constructor() {
-        // Almacenará las estadísticas de cada característica
         this.stats = {};
     }
 
@@ -45,7 +44,6 @@ class Statistics {
             min: Math.min(...values),
             max: Math.max(...values),
             count: values.length,
-            // Calculamos percentiles para entender la distribución
             percentiles: this.calculatePercentiles(values)
         };
     }

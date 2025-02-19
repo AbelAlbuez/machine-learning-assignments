@@ -35,16 +35,12 @@ class Trainer {
         // Binary Cross-Entropy Loss
         let crossEntropyLoss = -(actual * Math.log(predicted) + (1 - actual) * Math.log(1 - predicted));
     
-        // Regularización
         let regularizationTerm = 0;
         if (regularizationType === "L2") {
-            // L2: Penaliza la suma de los cuadrados de los pesos
             regularizationTerm = lambda * Object.values(this.model.weights).reduce((sum, w) => sum + w ** 2, 0);
         } else if (regularizationType === "L1") {
-            // L1: Penaliza la suma absoluta de los pesos
             regularizationTerm = lambda * Object.values(this.model.weights).reduce((sum, w) => sum + Math.abs(w), 0);
         } else if (regularizationType === "ElasticNet") {
-            // Elastic Net: Combina L1 y L2
             let l1 = Object.values(this.model.weights).reduce((sum, w) => sum + Math.abs(w), 0);
             let l2 = Object.values(this.model.weights).reduce((sum, w) => sum + w ** 2, 0);
             regularizationTerm = lambda * (0.5 * l1 + 0.5 * l2);

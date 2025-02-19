@@ -22,7 +22,6 @@ class DataLoader {
             fs.createReadStream(filePath)
                 .pipe(csv())
                 .on('data', (data) => {
-                    // Convertimos los strings a números
                     const processedWine = {
                         features: {
                             "fixed acidity": parseFloat(data["fixed acidity"]),
@@ -54,7 +53,6 @@ class DataLoader {
      * Procesa y normaliza los datos cargados
      */
     processData() {
-        // Calculamos estadísticas para cada característica
         const features = Object.keys(this.rawData[0].features);
         
         features.forEach(feature => {
@@ -62,7 +60,6 @@ class DataLoader {
             this.statistics.calculateFeatureStats(feature, values);
         });
 
-        // Normalizamos los datos
         this.normalizedData = this.rawData.map(wine => ({
             features: this.normalizeWine(wine.features),
             quality: wine.quality
@@ -95,7 +92,6 @@ class DataLoader {
         const totalSamples = this.normalizedData.length;
         const trainSize = Math.floor(totalSamples * trainRatio);
         
-        // Mezclamos los datos aleatoriamente
         const shuffledData = [...this.normalizedData]
             .sort(() => Math.random() - 0.5);
 
