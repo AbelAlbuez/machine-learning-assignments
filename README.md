@@ -35,7 +35,17 @@ cd python
 source env/bin/activate
 ```
 
-### **3️⃣ Install Dependencies**
+### **3️⃣ Install `pip` (if missing)**
+If `pip` is not installed, run:
+```bash
+python -m ensurepip --default-pip
+```
+Then, update it to the latest version:
+```bash
+pip install --upgrade pip
+```
+
+### **4️⃣ Install Dependencies**
 If `requirements.txt` does not exist, create it with the following:
 ```bash
 pip freeze > requirements.txt
@@ -45,13 +55,13 @@ Then, install the required packages:
 pip install -r requirements.txt
 ```
 
-### **4️⃣ Run the Python Script**
+### **5️⃣ Run the Python Script**
 Execute the script to train and evaluate the model:
 ```bash
 python wine_quality_ml.py
 ```
 
-### **5️⃣ Expected Output**
+### **6️⃣ Expected Output**
 The script will:
 - Load and preprocess the dataset.
 - Train the model using **Adam optimizer**.
