@@ -92,7 +92,7 @@ class Trainer:
                 print(f"Época {epoch + 1}/{self.epochs}, Pérdida: {loss:.4f}, Precisión: {accuracy:.4f}")
 
 if __name__ == "__main__":
-    X_train, X_test, y_train, y_test = load_data("./datasets/winequality-red.csv")
+    X_train, X_test, y_train, y_test = load_data("../datasets/winequality-red.csv")
     
     print("\nEntrenando con SGD...")
     model_sgd = WineModel(X_train.shape[1])
