@@ -125,25 +125,30 @@ class Base:
   # end def
 
   '''
+  Crea lotes de tamaño optimizado para el procesamiento del conjunto de datos
   '''
-  def _batches( self, indices, batch_size ):
+  def _batches(self, indices, batch_size):
+    # Si el tamaño de lote no está especificado o es demasiado grande,
+    # usar un tamaño por defecto que sea adecuado para el procesamiento en memoria
+    if batch_size <= 0 or batch_size > len(indices):
+        # Limitar el tamaño máximo de batch para MNIST (por ejemplo)
+        batch_size = min(128, len(indices))
+    
+    # Calcular el número de batches
+    n_batches = len(indices) // batch_size
+    
+    # Crear los batches
     batches = []
-    n_batches = 1
-    bs = batch_size
-    if bs > 0 and bs < len( indices ):
-      n_batches = len( indices ) // bs
-    else:
-      bs = len( indices )
-    # end if
-
-    for b in range( n_batches ):
-      batches += [ indices[ b * bs : ( b + 1 ) * bs ] ]
-    # end for
-
-    if len( indices ) != ( n_batches * bs ):
-      batches += [ indices[ n_batches * bs : ] ]
-    # end if
-
+    for b in range(n_batches):
+        start_idx = b * batch_size
+        end_idx = (b + 1) * batch_size
+        batches.append(indices[start_idx:end_idx])
+    
+    # Añadir los elementos restantes como último batch si es necesario
+    remaining = len(indices) - (n_batches * batch_size)
+    if remaining > 0:
+        batches.append(indices[n_batches * batch_size:])
+    
     return batches
   # end def
 

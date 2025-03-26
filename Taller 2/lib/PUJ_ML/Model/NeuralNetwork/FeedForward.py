@@ -214,10 +214,11 @@ class FeedForward( Base ):
   # end def
 
   '''
+  Fix for MNIST: Modified cost_gradient function that handles multi-class better
+  while maintaining the same interface
   '''
   def cost_gradient( self, X, Y, L1, L2 ):
-
-    # Forward
+    # Forward pass (same as original)
     A = [ X ]
     Z = []
     L = self.number_of_layers( )
@@ -227,10 +228,18 @@ class FeedForward( Base ):
     # end for
 
     G = numpy.zeros( ( 1, self.size( ) ) )
-
-    # Backpropagate last layer
-    m = float( 1 ) / float( X.shape[ 0 ] )
-    DL = A[ L ] - Y
+    
+    # For MNIST multi-class case with SoftMax
+    if Y.shape[1] == 10 and self.m_A[-1][0] == 'SoftMax':
+      # Better gradient calculation for multi-class
+      m = float( X.shape[0] )
+      DL = A[L] - Y  # This works well with SoftMax + categorical cross-entropy
+    else:
+      # Original code for binary classification (backward compatibility)
+      m = float( 1 ) / float( X.shape[ 0 ] )
+      DL = A[ L ] - Y
+    
+    # Rest of backpropagation (same as original)
     i = self.m_B[ L - 2 ].size
     o = self.m_B[ L - 1 ].size
     k = self.size( ) - o
@@ -238,7 +247,7 @@ class FeedForward( Base ):
     k -= i * o
     G[ 0 , k : k + ( i * o ) ] = ( ( A[ L - 1 ].T @ DL ) * m ).flatten( )
 
-    # Backpropagate remaining layers
+    # Backpropagate remaining layers (same as original)
     for l in range( L - 1, 0, -1 ):
       o = i
       i = self.m_W[ l - 1 ].shape[ 0 ]
@@ -253,50 +262,176 @@ class FeedForward( Base ):
       G[ 0 , k : k + ( i * o ) ] = ( ( A[ l - 1 ].T @ DL ) * m ).flatten( )
     # end for
 
-    # Cost (TODO: just MCE at the moment)
-    zi = numpy.where( Y == 0 )[ 0 ].tolist( )
-    oi = numpy.where( Y == 1 )[ 0 ].tolist( )
+    # Cost calculation for multi-class MNIST
+    if Y.shape[1] == 10 and self.m_A[-1][0] == 'SoftMax':
+      # For multi-class, use proper categorical cross-entropy
+      z_safe = numpy.clip(A[L], self.m_Epsilon, 1.0 - self.m_Epsilon)
+      J = -numpy.sum(numpy.multiply(Y, numpy.log(z_safe))) / float(X.shape[0])
+    else:
+      # Original code for binary classification
+      zi = numpy.where( Y == 0 )[ 0 ].tolist( )
+      oi = numpy.where( Y == 1 )[ 0 ].tolist( )
 
-    J  = numpy.log( float( 1 ) - A[ -1 ][ zi , : ] + self.m_Epsilon ).sum( )
-    J += numpy.log( A[ -1 ][ oi , : ] + self.m_Epsilon ).sum( )
-    J /= float( X.shape[ 0 ] )
+      J  = numpy.log( float( 1 ) - A[ -1 ][ zi , : ] + self.m_Epsilon ).sum( )
+      J += numpy.log( A[ -1 ][ oi , : ] + self.m_Epsilon ).sum( )
+      J /= float( X.shape[ 0 ] )
+      J = -J
 
-    return ( -J, G )
+    return ( J, G )
   # end def
 
+ 
   '''
+  Fix for MNIST: Modified cost function that handles multi-class classification better
+  while maintaining the same interface
   '''
   def cost( self, X, y ):
-    z = self( X )
+    # Get predictions from forward pass usando _evaluate directamente
+    z = self._evaluate(X)
+    
+    # Handle MNIST's multi-class case (10 classes)
+    if y.shape[1] == 10 and self.m_A[-1][0] == 'SoftMax':
+      # For multi-class, use proper categorical cross-entropy
+      m = float( X.shape[0] )
+      
+      # Clip values to avoid log(0)
+      z_safe = numpy.clip(z, self.m_Epsilon, 1.0 - self.m_Epsilon)
+      
+      # Categorical cross-entropy: -sum(y_true * log(y_pred))
+      # Element-wise multiplication and sum across classes
+      J = -numpy.sum(numpy.multiply(y, numpy.log(z_safe))) / m
+      
+      return J
+    else:
+      # Original binary classification code for backward compatibility
+      zi = numpy.where( y == 0 )[ 0 ].tolist( )
+      oi = numpy.where( y == 1 )[ 0 ].tolist( )
 
-    zi = numpy.where( y == 0 )[ 0 ].tolist( )
-    oi = numpy.where( y == 1 )[ 0 ].tolist( )
+      J  = numpy.log( float( 1 ) - z[ zi , : ] + self.m_Epsilon ).sum( )
+      J += numpy.log( z[ oi , : ] + self.m_Epsilon ).sum( )
+      J /= float( X.shape[ 0 ] )
 
-    J  = numpy.log( float( 1 ) - z[ zi , : ] + self.m_Epsilon ).sum( )
-    J += numpy.log( z[ oi , : ] + self.m_Epsilon ).sum( )
-    J /= float( X.shape[ 0 ] )
-
-    return -J
+      return -J
+  # end def
+  
+  '''
+  Added helper method to calculate classification accuracy
+  This doesn't modify the interface but adds a useful method
+  '''
+  def accuracy(self, X, y):
+    # Get predictions
+    predictions = self(X)
+    
+    # For multi-class (MNIST)
+    if y.shape[1] > 2:  # More than binary classification
+      # Convert to class indices
+      pred_classes = numpy.argmax(predictions, axis=1)
+      true_classes = numpy.argmax(y, axis=1)
+      
+      # Calculate accuracy
+      correct = numpy.sum(pred_classes == true_classes)
+    else:
+      # Binary classification (original behavior)
+      predicted_binary = (predictions >= 0.5).astype(float)
+      correct = numpy.sum(predicted_binary == y)
+    
+    # Return accuracy as percentage
+    return float(correct) / float(y.shape[0] * y.shape[1]) * 100.0
   # end def
 
   '''
+  Improved initialization that works better for ReLU networks
   '''
-  def _evaluate( self, X, threshold ):
-    L = self.number_of_layers( )
-    if L > 0:
-      a = X
-      for l in range( L ):
-        z = ( a @ self.m_W[ l ] ) + self.m_B[ l ]
-        a = self.m_A[ l ][ 1 ]( z )
+  def init_he( self ):
+    for l in range( self.number_of_layers( ) ):
+      in_size = self.m_W[ l ].shape[ 0 ]
+      out_size = self.m_W[ l ].shape[ 1 ]
+      
+      # Standard He initialization - better for ReLU
+      std_dev = numpy.sqrt(2.0 / in_size)
+      
+      # Initialize weights with normal distribution
+      for i in range( in_size ):
+        for o in range( out_size ):
+          self.m_W[ l ][ i , o ] = random.gauss(0, std_dev)
+        # end for
       # end for
-      if threshold:
-        return ( a >= 0.5 ).astype( float )
+      
+      # Initialize biases with small positive values for ReLU
+      for o in range( out_size ):
+        self.m_B[ l ][ 0 , o ] = 0.01
+      # end for
+    # end for
+  # end def
+
+  '''
+  Este método es requerido por Base.py - Es la función principal de evaluación
+  '''
+  def _evaluate(self, X, threshold=None):
+      """
+      Forward pass through the network
+      
+      Parameters:
+      X : Input data matrix
+      threshold : Whether to apply threshold for binary classification
+      
+      Returns:
+      numpy.ndarray: Network output after forward pass
+      """
+      L = self.number_of_layers()
+      if L > 0:
+          a = X
+          for l in range(L):
+              z = (a @ self.m_W[l]) + self.m_B[l]
+              a = self.m_A[l][1](z)
+          # end for
+          if threshold is not None and threshold:
+              # Only apply threshold for binary classification
+              if a.shape[1] == 1:
+                  return (a >= 0.5).astype(float)
+              else:
+                  return a  # For multi-class, return raw probabilities
+          else:
+              return a
       else:
-        return a
+          return None
       # end if
-    else:
-      return None
-    # end if
+  # end def
+  
+  '''
+  Método para calcular la precisión del modelo
+  '''
+  def calculate_accuracy(self, X, y):
+      """
+      Calculate classification accuracy
+      
+      Parameters:
+      X : Input data
+      y : Target labels
+      
+      Returns:
+      float: Classification accuracy (0-1)
+      """
+      # Get predictions using _evaluate directly to avoid recursion
+      predictions = self._evaluate(X)
+      
+      # For multi-class (MNIST)
+      if y.shape[1] > 1:  # More than binary classification
+          # Convert to class indices
+          pred_classes = numpy.argmax(predictions, axis=1)
+          true_classes = numpy.argmax(y, axis=1)
+          
+          # Calculate accuracy
+          correct = numpy.sum(pred_classes == true_classes)
+          total = y.shape[0]
+      else:
+          # Binary classification
+          predicted_binary = (predictions >= 0.5).astype(float)
+          correct = numpy.sum(predicted_binary == y)
+          total = y.shape[0]
+      
+      # Return accuracy as decimal (0-1)
+      return float(correct) / float(total)
   # end def
 
   '''

@@ -2,7 +2,7 @@
 ## @author Leonardo Florez-Valencia (florez-l@javeriana.edu.co)
 ## =========================================================================
 
-import math
+import math, numpy
 from .Base import Base
 
 """
@@ -25,11 +25,14 @@ class GradientDescent( Base ):
     self.m_Model.init( )
     t = 0
     stop = False
+    latest_G = None  # Variable para almacenar el último gradiente
+    
     while not stop:
       t += 1
 
       for batch in batches:
         J_tr, G = self.m_Model.cost_gradient( X_tr[ batch, : ], y_tr[ batch, : ], self.m_Lambda1, self.m_Lambda2 )
+        latest_G = G  # Guardar referencia al último gradiente
         self.m_Model -= G * self.m_Alpha
       # end for
 
@@ -40,7 +43,9 @@ class GradientDescent( Base ):
         # end if
 
         if not self.m_Debug is None:
-          stop = self.m_Debug( t, ( G.T @ G )[ 0 , 0 ] ** 0.5, J_tr, J_te )
+          # Usar latest_G en lugar de G
+          grad_norm = (latest_G.T @ latest_G)[ 0 , 0 ] ** 0.5 if latest_G is not None else 0
+          stop = self.m_Debug( t, grad_norm, J_tr, J_te )
         # end if
       else:
         stop = True
