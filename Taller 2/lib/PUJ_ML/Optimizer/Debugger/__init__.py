@@ -3,5 +3,6 @@
 ## =========================================================================
 
 from .Simple import *
+from .ImprovedDebugger import *
 
 ## eof - __init__.py
