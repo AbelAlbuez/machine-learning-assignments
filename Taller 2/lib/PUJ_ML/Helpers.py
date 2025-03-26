@@ -129,6 +129,8 @@ def ParseFitArguments( args, mandatory = [], optional = [] ):
   parser.add_argument( '-L1', '--L1', type = float, default = 0 )
   parser.add_argument( '-L2', '--L2', type = float, default = 0 )
   parser.add_argument( '-e', '--epochs', type = int, default = 1000 )
+  parser.add_argument( '-p', '--patience', type = int, default = 0, 
+                      help = 'Early stopping patience. 0 means no early stopping.' )
   try:
     return parser.parse_args( )
   except BaseException as error:
@@ -160,8 +162,9 @@ def FitModel( model, args, D_tr, D_te ):
   #elif args.debugger.lower( ) == 'graphic':
   #opt.m_Debug = GraphicConfussionDebugger( args.epochs, model, D_tr, D_te )
   # end if
-  opt.m_Debug = Debugger.Simple( args.epochs, model, D_tr, D_te )
-
+  # opt.m_Debug = Debugger.Simple( args.epochs, model, D_tr, D_te )
+  opt.m_Debug = Debugger.ImprovedDebugger( args.epochs, model, D_tr, D_te )
+  
   # Fit model to train data
   val = ''
   K = 1

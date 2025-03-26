@@ -111,6 +111,11 @@ def ReadMNIST( dn ):
   Y_tr = L[ L_tr.tolist( ) , : ]
   Y_te = L[ L_te.tolist( ) , : ]
 
+  # Normalize pixel values to [0, 1] range
+  X_tr = X_tr / 255.0
+  X_te = X_te / 255.0
+
+  # Return data with original structure
   return ( ( X_tr, Y_tr ), ( X_te, Y_te ) )
 # end def
 
