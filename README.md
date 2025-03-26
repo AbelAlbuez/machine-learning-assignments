@@ -1,104 +1,180 @@
-# **Adam Implementation - Machine Learning**
+# **Proyecto de Machine Learning**
 
-This project implements the **Adam optimization algorithm** to train a machine learning model for classifying wine quality based on physicochemical properties. The implementation is available in both **Python** and **Node.js**.
+Este repositorio contiene dos proyectos relacionados con machine learning:
+
+1. **Implementación del algoritmo de optimización Adam** para clasificación de calidad de vinos
+2. **Redes Neuronales Feedforward para MNIST** (Taller 2)
 
 ---
-## **📌 Project Structure**
+
+## **📁 Estructura del Proyecto**
+
 ```
-adam-implementation/
-│── javascript/
-│   ├── index.js  # Node.js implementation
+machine-learning-assignments/
 │
-│── python/
-│   ├── env/  # Virtual environment for Python dependencies
-│   ├── wine_quality_ml.py  # Python implementation
-│   ├── requirements.txt  # List of Python dependencies
+├── adam-implementation/
+│   ├── datasets/
+│   ├── javascript/
+│   │   └── index.js  # Implementación en Node.js
+│   ├── python/
+│   │   ├── env/  # Entorno virtual para dependencias Python
+│   │   ├── wine_quality_ml.py  # Implementación en Python
+│   │   └── requirements.txt  # Lista de dependencias Python
+│   └── Bitácora de Desarrollo - Implementación del Algoritmo Adam.pdf
+│
+└── Taller 2/
+    ├── data/
+    ├── examples/
+    ├── lib/
+    │   └── PUJ_ML/
+    ├── MNIST_ORG/
+    ├── models/
+    ├── venv/
+    ├── Taller 2 - Bitácora de Desarrollo.docx
+    └── README.md
 ```
+
 ---
-## **🔹 Running the Project in Python**
 
-### **1️⃣ Prerequisites**
-Ensure you have **Python 3.x** installed. If not, download it from [Python's official website](https://www.python.org/downloads/).
+## **💻 Implementación de Adam**
 
-### **2️⃣ Activate the Virtual Environment**
-Navigate to the `python` folder and activate the existing virtual environment:
+### **🔹 Ejecutando el Proyecto en Python**
 
-#### **Windows**
+#### **1️⃣ Prerrequisitos**
+
+Asegúrate de tener **Python 3.x** instalado. Si no, descárgalo desde [el sitio oficial de Python](https://www.python.org/downloads/).
+
+#### **2️⃣ Activar el Entorno Virtual**
+
+Navega a la carpeta `adam-implementation/python` y activa el entorno virtual existente:
+
+##### **Windows**
+
 ```bash
-cd python
+cd adam-implementation/python
 env\Scripts\activate
 ```
 
-#### **Mac/Linux**
+##### **Mac/Linux**
+
 ```bash
-cd python
+cd adam-implementation/python
 source env/bin/activate
 ```
 
-### **3️⃣ Install `pip` (if missing)**
-If `pip` is not installed, run:
-```bash
-python -m ensurepip --default-pip
-```
-Then, update it to the latest version:
-```bash
-pip install --upgrade pip
-```
+#### **3️⃣ Instalar Dependencias**
 
-### **4️⃣ Install Dependencies**
-If `requirements.txt` does not exist, create it with the following:
-```bash
-pip freeze > requirements.txt
-```
-Then, install the required packages:
+Instala los paquetes requeridos:
+
 ```bash
 pip install -r requirements.txt
 ```
 
-### **5️⃣ Run the Python Script**
-Execute the script to train and evaluate the model:
+#### **4️⃣ Ejecutar el Script Python**
+
 ```bash
 python wine_quality_ml.py
 ```
 
-### **6️⃣ Expected Output**
-The script will:
-- Load and preprocess the dataset.
-- Train the model using **Adam optimizer**.
-- Evaluate the model performance.
-- Display accuracy and loss metrics.
+### **🔹 Ejecutando el Proyecto en Node.js**
 
----
-## **🔹 Running the Project in Node.js**
+#### **1️⃣ Prerrequisitos**
 
-### **1️⃣ Prerequisites**
-Ensure you have **Node.js** and **npm** installed. If not, download them from [Node.js official website](https://nodejs.org/).
+Asegúrate de tener **Node.js** y **npm** instalados. Si no, descárgalos desde [el sitio oficial de Node.js](https://nodejs.org/).
 
-### **2️⃣ Install Dependencies**
-Navigate to the `javascript` folder and install the required packages:
+#### **2️⃣ Instalar Dependencias**
+
+Navega a la carpeta `adam-implementation/javascript` e instala los paquetes requeridos:
+
 ```bash
-cd javascript
+cd adam-implementation/javascript
 npm install
 ```
 
-### **3️⃣ Run the Node.js Script**
-Execute the script to train and evaluate the model:
+#### **3️⃣ Ejecutar el Script Node.js**
+
 ```bash
 node index.js
 ```
 
-### **4️⃣ Expected Output**
-The script will:
-- Load and preprocess the dataset.
-- Train the model using **Adam optimizer**.
-- Compare results with **Stochastic Gradient Descent (SGD)**.
-- Display accuracy and loss metrics.
+---
+
+## **🧠 Taller 2: Redes Neuronales para MNIST**
+
+### **📋 Descripción**
+
+Este proyecto implementa tres modelos diferentes de redes neuronales feedforward para la clasificación de dígitos manuscritos del dataset MNIST.
+
+### **🔹 Ejecutando el Proyecto**
+
+#### **1️⃣ Prerrequisitos**
+
+Asegúrate de tener **Python 3.x** instalado con las siguientes bibliotecas:
+
+- NumPy
+- Matplotlib
+- scikit-learn
+
+#### **2️⃣ Activar el Entorno Virtual**
+
+Navega a la carpeta `Taller 2` y activa el entorno virtual:
+
+##### **Windows**
+
+```bash
+cd "Taller 2"
+venv\Scripts\activate
+```
+
+##### **Mac/Linux**
+
+```bash
+cd "Taller 2"
+source venv/bin/activate
+```
+
+#### **3️⃣ Instalar Dependencias**
+
+Si las dependencias no están instaladas:
+
+```bash
+pip install numpy matplotlib scikit-learn
+```
+
+#### **4️⃣ Ejecutar el Script Principal**
+
+```bash
+python main.py
+```
+
+### **🔢 Modelos Implementados**
+
+1. **Red Neuronal Simple**
+   - Arquitectura: 784 → 100 (Sigmoid) → 10 (Softmax)
+   - Inicialización: Xavier
+
+2. **Red Neuronal Profunda**
+   - Arquitectura: 784 → 100 (ReLU) → 50 (ReLU) → 10 (Softmax)
+   - Inicialización: He
+
+3. **Red Neuronal Personalizada**
+   - Arquitectura: 784 → 30 (Sigmoid) → 30 (Sigmoid) → 10 (Softmax)
+   - Inicialización: Xavier
+
+### **🛠️ Mejoras Implementadas**
+
+- **Optimización Softmax**: Implementación estable con manejo de batches grandes
+- **Inicialización de Pesos**: Métodos Xavier y He
+- **Optimización de Adam**: Mejoras para manejo eficiente de memoria
+- **Análisis de Resultados**: Visualización detallada de matrices de confusión y curvas de aprendizaje
 
 ---
-## **🚀 Next Steps**
-- Fine-tune hyperparameters for better performance.
-- Add visualization of loss and accuracy trends.
-- Experiment with different optimizers like **RMSProp** or **Momentum**.
 
-For any issues or contributions, feel free to open a pull request. Happy coding! 🚀
+## **📊 Resultados**
 
+Los resultados y métricas de cada modelo se pueden encontrar en:
+
+- `adam-implementation/Bitácora de Desarrollo - Implementación del Algoritmo Adam.pdf`
+- `Taller 2/Taller 2 - Bitácora de Desarrollo.docx`
+
+---
