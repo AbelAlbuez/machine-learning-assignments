@@ -1,0 +1,5 @@
+784
+30 Sigmoid
+30 Sigmoid
+10 SoftMax
+random

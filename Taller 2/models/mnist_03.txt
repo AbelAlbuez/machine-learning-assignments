@@ -1,0 +1,4 @@
+784
+64 Tanh
+10 SoftMax
+random
