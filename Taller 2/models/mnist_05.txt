@@ -1,0 +1,5 @@
+784
+100 LeakyReLU
+50 LeakyReLU
+10 SoftMax
+he

@@ -1,5 +1,5 @@
 784
-64 ReLU
-32 ReLU
+50 ReLU
+25 ReLU
 10 SoftMax
 he
